@@ -1,0 +1,19 @@
+{
+  "mode": "yolo",
+  "granularity": "standard",
+  "parallelization": true,
+  "commit_docs": true,
+  "model_profile": "inherit",
+  "workflow": {
+    "research": true,
+    "plan_check": true,
+    "verifier": true,
+    "nyquist_validation": true,
+    "auto_advance": true
+  },
+  "project": {
+    "code": "TJA",
+    "title": "Trading Journal App",
+    "path": "/Users/avidarji/Documents/Projects/Trading Journal App"
+  }
+}
