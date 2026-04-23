@@ -1,8 +1,8 @@
 "use client"
 
 import { useState, useEffect } from 'react'
-import { TradeList } from '@/components/TradeList'
-import { TradeForm } from '@/components/TradeForm'
+import { TradeList } from '../components/TradeList'
+import { TradeForm } from '../components/TradeForm'
 
 export default function Home() {
   const [trades, setTrades] = useState<any[]>([])

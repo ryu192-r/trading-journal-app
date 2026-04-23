@@ -60,3 +60,5 @@ coverage/
 # Misc
 *.tgz
 *.tar.gz
+
+/generated/prisma
