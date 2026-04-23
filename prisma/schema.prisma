@@ -1,0 +1,74 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  passwordHash  String
+  name          String?
+  createdAt     DateTime  @default(now())
+  trades        Trade[]
+}
+
+model Trade {
+  id           String    @id @default(cuid())
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Required fields
+  symbol       String
+  direction    Direction
+  entryPrice   Float
+  entryDate    DateTime  @default(now())
+  
+  // Optional fields (LOG-02: stop/target optional initially)
+  exitPrice    Float?
+  stopPrice    Float?
+  targetPrice  Float?
+  exitDate     DateTime?
+  quantity     Int?
+  
+  // Categorization
+  setupType    SetupType? // EP, VCP, etc.
+  tags         String[]   // Array of custom tags (JSON)
+  
+  // Notes and media
+  notes        String?
+  screenshotUrl String?
+  
+  // Timestamps
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  
+  // Computed (stored for performance, updated via trigger or app logic)
+  pnl          Float?    // Calculated P&L in INR
+  
+  @@index([userId])
+  @@index([symbol])
+  @@index([entryDate])
+  @@index([direction])
+}
+
+enum Direction {
+  LONG
+  SHORT
+}
+
+enum SetupType {
+  EP
+  VCP
+  BREAKOUT
+  PULLBACK
+  PARABOLIC_LONG
+  CUSTOM
+}
