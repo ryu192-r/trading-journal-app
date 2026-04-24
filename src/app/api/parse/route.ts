@@ -3,7 +3,7 @@ import { requireAuth } from '@/middleware/auth';
 import { prisma } from '@/lib/db';
 import { parseNaturalLanguage } from '@/lib/parsers/nlParser';
 import { TradeCreateSchema } from '@/lib/validations/zodSchemas';
-import { classifyMarketRegime } from '@/lib/analytics/calculator';
+import { classifyMarketRegime, computeMAE } from '@/lib/analytics/calculator';
 
 export async function POST(request: NextRequest) {
   const user = await requireAuth();
@@ -45,15 +45,23 @@ export async function POST(request: NextRequest) {
        regime: await classifyMarketRegime(validated.entryDate),
      };
 
-    if (validated.exitPrice) {
-      const qty = validated.quantity || 1;
-      const diff = validated.direction === 'LONG'
-        ? validated.exitPrice - validated.entryPrice
-        : validated.entryPrice - validated.exitPrice;
-      dbRecord.pnl = diff * qty;
-    }
+     if (validated.exitPrice) {
+       const qty = validated.quantity || 1;
+       const diff = validated.direction === 'LONG'
+         ? validated.exitPrice - validated.entryPrice
+         : validated.entryPrice - validated.exitPrice;
+       dbRecord.pnl = diff * qty;
+     }
 
-    const trade = await prisma.trade.create({ data: dbRecord });
+     // Compute MAE for closed trades
+     if (validated.exitPrice) {
+       const maeResult = await computeMAE(dbRecord);
+       dbRecord.mae = maeResult?.maeAbs ?? null;
+     } else {
+       dbRecord.mae = null;
+     }
+
+     const trade = await prisma.trade.create({ data: dbRecord });
     return NextResponse.json({ trade }, { status: 201 });
   } catch (err: any) {
     return NextResponse.json(
