@@ -1,76 +1,49 @@
-# Plan 01 Summary — Phase 1: Foundation & Trade Logging
+# Plan 01-01 Summary — Phase 1: Foundation & Trade Logging
 
-**Status:** Updated with missing tasks (analytics, export, frontend, sorting)
+**Status:** ✅ Complete
 
-## Tasks Added
+## What Was Built
 
-| Task | Description | Requirements Covered |
-|------|-------------|-------------------|
-| Task 5 | Analytics endpoints (P&L summary, equity curve) | ANLY-01, ANLY-02 |
-| Task 6 | Export endpoint (CSV/JSON) | UI-02 |
-| Task 7 | Vite + React + Tailwind + shadcn/ui setup | UI-01 |
-| Task 8 | TradeList and TradeForm components | UI-01 |
+Created the type-safety and validation foundation for all data ingestion features:
 
-## Updates to Existing Tasks
+- Shared TypeScript type definitions (`src/types/trade.types.ts`) — `TradeInput`, `TradeOutput`, `Direction`, `SetupType`
+- Zod validation schemas (`src/lib/validations/zodSchemas.ts`) — `TradeCreateSchema`, `TradeUpdateSchema`, `ParseInputSchema` with runtime validation
+- Hardened auth middleware (`src/middleware/auth.ts`) — fails fast on missing `JWT_SECRET` environment variable
 
-| Task | Update | Requirement Impact |
-|------|--------|-------------------|
-| Task 4 | Added sorting support to GET /api/trades | ANLY-03 (filter/sort) |
+## Tasks Completed
 
-## Coverage Verification
+| # | Task | Status | Commit |
+|---|------|--------|--------|
+| 1 | Create shared TypeScript type definitions | ✅ | `98003dd` |
+| 2 | Install Zod and create validation schemas | ✅ | `a4712d0` |
+| 3 | Harden auth middleware with JWT_SECRET check | ✅ | `9109721` |
 
-| Requirement | Task(s) | Status |
-|-------------|----------|--------|
-| LOG-01 | Task 4 | ✅ |
-| LOG-02 | Task 4 | ✅ |
-| LOG-03 | Task 4 | ✅ |
-| LOG-04 | Task 4 | ✅ |
-| LOG-05 | Task 4 | ✅ |
-| ANLY-01 | Task 5 (P&L summary) | ✅ |
-| ANLY-02 | Task 5 (equity curve) | ✅ |
-| ANLY-03 | Task 4 (filtering + sorting) | ✅ |
-| UI-01 | Task 7 (setup), Task 8 (components) | ✅ |
-| UI-02 | Task 6 (export endpoint) | ✅ |
+## Requirements Covered
 
-## Success Criteria Updated
+| Requirement | Task | Status |
+|-------------|------|--------|
+| LOG-01 | Provides TradeInput type for trade creation | ✅ |
+| LOG-02 | Types include optional stop/target/quantity | ✅ |
+| LOG-05 | ParseInputSchema enables NL entry validation | ✅ |
 
-All 10 success criteria from ROADMAP.md are now addressable:
+## Key Files Created/Modified
 
-1. ✅ User can create a trade with all required fields (Task 4)
-2. ✅ User can import trades via CSV (Plan 02 Task 4)
-3. ✅ User can tag trades with setup type (Task 4)
-4. ✅ User can add notes and upload screenshots (Task 4)
-5. ✅ User can log trades via natural language (Plan 02 Task 5)
-6. ✅ User can view P&L summary (Task 5 - GET /api/analytics/pnl-summary)
-7. ✅ User can see equity curve (Task 5 - GET /api/analytics/equity-curve)
-8. ✅ User can filter/sort trades (Task 4 - GET /api/trades with sortBy, sortOrder)
-9. ✅ User can export trades to CSV/JSON (Task 6 - GET /api/trades/export)
-10. ✅ Application is responsive (Task 7 - Tailwind, Task 8 - components)
+- `src/types/trade.types.ts` — NEW (26 lines)
+- `src/lib/validations/zodSchemas.ts` — NEW (35 lines)
+- `src/middleware/auth.ts` — MODIFIED (added JWT_SECRET guard)
 
-## Files Modified (Plan 01)
+## Self-Check: PASSED
 
-- prisma/schema.prisma
-- src/lib/db.ts
-- src/middleware/auth.ts
-- src/app/api/auth/register/route.ts
-- src/app/api/auth/login/route.ts
-- src/app/api/trades/route.ts
-- src/app/api/trades/[id]/route.ts
-- src/app/api/analytics/pnl-summary/route.ts (NEW)
-- src/app/api/analytics/equity-curve/route.ts (NEW)
-- src/app/api/trades/export/route.ts (NEW)
-- package.json (NEW)
-- vite.config.ts (NEW)
-- tsconfig.json (NEW)
-- tailwind.config.ts (NEW)
-- postcss.config.js (NEW)
-- src/app/layout.tsx (NEW)
-- src/app/page.tsx (NEW)
-- src/components/TradeList.tsx (NEW)
-- src/components/TradeForm.tsx (NEW)
+- ✅ Types match Prisma Trade model fields
+- ✅ Zod schemas enforce required fields (symbol, direction, entryPrice)
+- ✅ Auth module throws on missing JWT_SECRET at import time
+- ✅ All tasks committed individually
+
+## Deviations
+
+None — executed as planned.
 
 ## Next Steps
 
-1. Run verification again to confirm all gaps filled
-2. Update Plan 02 to add export task if needed
-3. Execute plans to build Phase 1
+1. Proceed to Plan 01-02 (CSV parser + import endpoint) or 01-03 (NL parser) — Wave 2
+2. Downstream plans will import these types and schemas
