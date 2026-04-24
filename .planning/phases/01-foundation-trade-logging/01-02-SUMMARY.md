@@ -1,51 +1,57 @@
-# Plan 02 Summary — Phase 1: Foundation & Trade Logging
+# Plan 01-02 Summary — Phase 1: Foundation & Trade Logging
 
-**Status:** Updated with missing export task
+**Status:** ✅ Complete
 
-## Tasks Added
+## What Was Built
 
-| Task | Description | Requirements Covered |
-|------|-------------|-------------------|
-| Task 6 | Export endpoint (CSV/JSON) | UI-02 |
+Implemented CSV import pipeline for Indian broker tradebooks:
 
-## Coverage Verification
+- Generic CSV parser (`src/lib/parsers/csvParser.ts`) — parses any CSV with headers into raw records
+- Broker mappers (`src/lib/parsers/brokerMappers.ts`) — auto-detects Zerodha/Dhan/AngelOne/ICICI Direct from headers, maps to `TradeInput`
+- Import API endpoint (`src/app/api/import/route.ts`) — POST `/api/import` accepts multipart CSV, validates with Zod, creates trades in transaction with per-row error isolation
 
-| Requirement | Task(s) | Status |
-|-------------|----------|--------|
-| LOG-01 | Task 1, 2, 3, 4, 5 | ✅ |
-| LOG-02 | Task 2, 4 | ✅ |
-| LOG-03 | Task 1, 2, 3 | ✅ |
-| LOG-04 | Task 3 | ✅ |
-| LOG-05 | Task 5 | ✅ |
-| UI-02 | Task 6 (NEW) | ✅ |
+## Tasks Completed
 
-## Files Modified (Plan 02)
+| # | Task | Status | Commit |
+|---|------|--------|--------|
+| 1 | Install csv-parse and create generic CSV parser | ✅ | `d1cdca1` |
+| 2 | Implement broker-specific mappers (4 brokers) | ✅ | `4884f69` |
+| 3 | Create CSV import API endpoint with Zod validation | ✅ | `9a58708` |
 
-- src/types/trade.types.ts
-- src/lib/parsers/csvParser.ts
-- src/lib/parsers/brokerMappers.ts
-- src/lib/parsers/nlParser.ts
-- src/app/api/import/route.ts
-- src/app/api/parse/route.ts
-- src/app/api/trades/export/route.ts (NEW - added in Plan 01, referenced here)
+## Requirements Covered
 
-## Success Criteria Updated
+| Requirement | Task | Status |
+|-------------|------|--------|
+| LOG-02 | CSV import from Indian brokers | ✅ |
+| LOG-03 | Setup tags extracted from broker columns (e.g., Zerodha Product) | ✅ |
+| LOG-04 | Notes captured from broker source | ✅ |
 
-All success criteria from ROADMAP.md are now addressable:
+## Key Files Created
 
-1. ✅ User can create a trade with all required fields (Task 1, 3, 5)
-2. ✅ User can import trades via CSV from Indian brokers (Task 2, 4)
-3. ✅ User can tag trades with setup type (Task 1, 3)
-4. ✅ User can add notes and upload screenshots (Task 3)
-5. ✅ User can log trades via natural language (Task 5)
-6. ✅ User can view P&L summary (Plan 01 Task 5)
-7. ✅ User can see equity curve (Plan 01 Task 5)
-8. ✅ User can filter/sort trades (Plan 01 Task 4 - sorting added)
-9. ✅ User can export trades to CSV/JSON (Task 6)
-10. ✅ Application is responsive (Plan 01 Task 7, 8)
+- `src/lib/parsers/csvParser.ts` — Generic CSV parser using csv-parse/sync
+- `src/lib/parsers/brokerMappers.ts` — Broker detection + mapping for 4 Indian brokers
+- `src/app/api/import/route.ts` — POST endpoint with auth, validation, transactional writes
+
+## Behavior Highlights
+
+- **Partial import**: Valid rows succeed; invalid rows reported with line numbers
+- **No duplicate detection** in Phase 1 (deferred to Phase 2)
+- **No file size limit** in Phase 1
+- **No preview** — direct import with error summary (preview deferred)
+
+## Self-Check: PASSED
+
+- ✅ `mapBrokerCSV` returns `{ trades: TradeInput[], errors: string[] }`
+- ✅ Broker auto-detection works from header matching
+- ✅ Endpoint uses `requireAuth` and `TradeCreateSchema`
+- ✅ Transaction ensures atomic batch; errors caught per-row
+- ✅ Response includes `{ imported, failed, message, errors? }`
+
+## Deviations
+
+None — executed as planned.
 
 ## Next Steps
 
-1. Re-run verification: `gsd-plan-checker` to confirm all gaps filled
-2. Execute Phase 1: `/gsd-execute-phase 1`
-3. Verify deliverables against success criteria
+1. Execute Plan 01-03 (NL parser + parse endpoint) — Wave 2
+2. Then Wave 3: Plan 01-04 (frontend pages)
