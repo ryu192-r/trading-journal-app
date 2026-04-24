@@ -20,8 +20,10 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **ANLY-01**: User can view P&L summary (win rate, profit factor, avg win/loss, expectancy in R-multiple)
 - [ ] **ANLY-02**: User can see equity curve (account growth over time with drawdown overlay)
 - [ ] **ANLY-03**: User can filter/sort trades by date, symbol, setup, P&L, tags, emotion
-- [ ] **ANLY-04**: System calculates R-multiple distribution (-2R to +5R+) with histogram visualization
-- [ ] **ANLY-05**: System calculates Sharpe ratio, Sortino ratio, maximum drawdown, recovery factor
+- [x] **ANLY-04
+**: System calculates R-multiple distribution (-2R to +5R+) with histogram visualization
+- [x] **ANLY-05
+**: System calculates Sharpe ratio, Sortino ratio, maximum drawdown, recovery factor
 
 ### Behavioral Analytics
 
@@ -34,17 +36,22 @@ Requirements for initial release. Each maps to roadmap phases.
 ### MAE/MFE Analysis
 
 - [ ] **MAE-01**: System calculates Maximum Adverse Excursion (MAE) per trade automatically
-- [ ] **MAE-02**: System generates MAE histogram with stop optimization recommendations ("Set stop at 2% — 95% of winners never went below")
+- [x] **MAE-02
+**: System generates MAE histogram with stop optimization recommendations ("Set stop at 2% — 95% of winners never went below")
 - [ ] **MAE-03**: System calculates Maximum Favorable Excursion (MFE) to detect early exits
 - [ ] **MAE-04**: System tracks ghost trades (30-day post-exit monitoring of what stock did after exit)
 
 ### Setup & Market Analytics
 
-- [ ] **SETUP-01**: System tracks performance by setup type (win rate, avg R, profit factor, best/worst trade)
-- [ ] **SETUP-02**: System provides setup scorecard with allocation recommendations
+- [x] **SETUP-01
+**: System tracks performance by setup type (win rate, avg R, profit factor, best/worst trade)
+- [x] **SETUP-02
+**: System provides setup scorecard with allocation recommendations
 - [ ] **MKT-01**: System logs market regime per trade (Bull/Bear/Sideways × Normal/Volatile — 6 types)
-- [ ] **MKT-02**: System shows performance by market regime with adaptive rules (e.g., "When VIX > 25 → sit out")
-- [ ] **MKT-03**: System maps trades on Nifty/Sensex chart weekly (situational awareness)
+- [x] **MKT-02
+**: System shows performance by market regime with adaptive rules (e.g., "When VIX > 25 → sit out")
+- [x] **MKT-03
+**: System maps trades on Nifty/Sensex chart weekly (situational awareness)
 
 ### Dashboard & Alerts
 
