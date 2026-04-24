@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: verifying
-last_updated: "2026-04-24T09:22:07.905Z"
+last_updated: "2026-04-24T10:08:43.369Z"
 progress:
   total_phases: 5
-  completed_phases: 2
-  total_plans: 8
-  completed_plans: 8
-  percent: 100
+  completed_phases: 1
+  total_plans: 13
+  completed_plans: 10
+  percent: 77
 ---
 
 # STATE.md
@@ -35,7 +35,7 @@ progress:
 
 **Phase:** 2 — Core Analytics
 **Plan:** 3 of 3
-**Status:** ✅ Complete — ready for verification
+**Status:** Phase complete — ready for verification
 **Progress:** [██████████] 100%
 
 **Progress Bar:** [█████████] 2/5 phases
@@ -70,6 +70,9 @@ progress:
   - Analytics: exclude open trades (realized only)
   - DB indexes: composite/GIN deferred to Phase 2
   - Validation: adopt Zod with structured error objects
+- Made computeMAE return null on error instead of throwing — prevents information disclosure and allows endpoints to handle failures gracefully
+- All three creation endpoints follow identical compute-before-create pattern, mirroring existing regime classification
+- CSV import rows that fail MAE computation are skipped entirely — maintains partial import contract and ensures closed trades always have MAE per MAE-01
 
 ### Open Questions
 
@@ -89,13 +92,20 @@ progress:
 
 ## Session Continuity
 
-**Last Updated:** 2026-04-24T12:45:00+05:30
-**Context:** Phase 2 implementation complete (3/3 plans executed). Pending verification.
+**Last Updated:** 2026-04-24T15:35:00+05:30
+**Context:** Phase 2 implementation complete (3/3 plans executed). All gap closures for Phase 2 are complete and verified.
 
-**Phase 2 Summary:** `.planning/phases/02-core-analytics/` (02-01, 02-02, 02-03 SUMMARY.md files)
+**Phase 2 Summary:** `.planning/phases/02-core-analytics/` (02-01, 02-02, 02-03 SUMMARY.md files; gap-01 through gap-05 closures)
+
+**Gap Closure Status:**
+- [x] gap-01: computeMAE function and trade.mae field created
+- [x] gap-02: MAE auto-compute on all trade creation endpoints ✓ (this work)
+- [ ] gap-03: TBD
+- [ ] gap-04: TBD
+- [ ] gap-05: TBD
 
 **Next Steps:**
-- Run `/gsd-verify-phase 2` to validate success criteria
+- Run `/gsd-verify-phase 2` to validate all success criteria
 - If issues found: `/gsd-code-review-fix 2` or manual fixes
 - Then proceed to Phase 3 planning
 
