@@ -64,10 +64,13 @@
 10. System shows adaptive rules per regime (e.g., "When VIX > 25 → sit out")
 11. Weekly auto-plot of trades on Nifty/Sensex chart displays with-trend vs counter-trend performance for situational awareness
 
-**Plans:** 3/3 complete
+**Plans:** 5/5 complete
 - [x] 02-01-PLAN.md — Analytics engine & database schema
 - [x] 02-02-PLAN.md — Analytics API endpoints
 - [x] 02-03-PLAN.md — Analytics UI components and pages
+- [x] 02-gap-01-PLAN.md — MAE field creation
+- [x] 02-gap-02-PLAN.md — MAE auto-compute on trade endpoints
+- [x] 02-gap-03-PLAN.md — Exit efficiency scoring for R-multiples
 
 ### Phase 3: Behavioral Analysis
 
@@ -160,7 +163,7 @@
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation & Trade Logging | 5/5 | Executed (verification pending) | 2026-04-24 |
-| 2. Core Analytics | 3/3 | Executed (verification pending) | - |
+| 2. Core Analytics | 5/5 | Executed (verification pending) | 2026-04-24 |
 | 3. Behavioral Analysis | 0/3 | Not started | - |
 | 4. Dashboard & Alerts | 0/3 | Not started | - |
 | 5. Reports & Polish | 0/3 | Not started | - |

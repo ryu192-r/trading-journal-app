@@ -35,7 +35,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### MAE/MFE Analysis
 
-- [ ] **MAE-01**: System calculates Maximum Adverse Excursion (MAE) per trade automatically
+- [x] **MAE-01
+**: System calculates Maximum Adverse Excursion (MAE) per trade automatically
 - [x] **MAE-02
 **: System generates MAE histogram with stop optimization recommendations ("Set stop at 2% — 95% of winners never went below")
 - [ ] **MAE-03**: System calculates Maximum Favorable Excursion (MFE) to detect early exits
@@ -128,7 +129,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ANLY-01 | Phase 1 | Pending |
 | ANLY-02 | Phase 1 | Pending |
 | ANLY-03 | Phase 1 | Pending |
-| ANLY-04 | Phase 2 | Pending |
+| ANLY-04 | Phase 2 | Completed |
 | ANLY-05 | Phase 2 | Pending |
 | BEHV-01 | Phase 3 | Pending |
 | BEHV-02 | Phase 3 | Pending |
