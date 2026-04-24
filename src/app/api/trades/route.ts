@@ -68,18 +68,25 @@ export async function POST(request: NextRequest) {
     userId,
   }
   
-   // Optional fields
-   if (body.exitPrice != null) tradeData.exitPrice = parseFloat(body.exitPrice)
-   if (body.stopPrice != null) tradeData.stopPrice = parseFloat(body.stopPrice)
-   if (body.targetPrice != null) tradeData.targetPrice = parseFloat(body.targetPrice)
-   if (body.exitDate) tradeData.exitDate = new Date(body.exitDate)
-   if (body.quantity != null) tradeData.quantity = Math.floor(body.quantity)
-   if (body.setupType) tradeData.setupType = body.setupType
-   if (body.notes) tradeData.notes = body.notes
-   if (body.screenshotUrl) tradeData.screenshotUrl = body.screenshotUrl
+    // Optional fields
+    if (body.exitPrice != null) tradeData.exitPrice = parseFloat(body.exitPrice)
+    if (body.stopPrice != null) tradeData.stopPrice = parseFloat(body.stopPrice)
+    if (body.targetPrice != null) tradeData.targetPrice = parseFloat(body.targetPrice)
+    if (body.exitDate) tradeData.exitDate = new Date(body.exitDate)
+    if (body.quantity != null) tradeData.quantity = Math.floor(body.quantity)
+    if (body.setupType) tradeData.setupType = body.setupType
+    if (body.notes) tradeData.notes = body.notes
+    if (body.screenshotUrl) tradeData.screenshotUrl = body.screenshotUrl
+    // Behavioral analytics fields (Phase 3)
+    if (body.emotionPre) tradeData.emotionPre = body.emotionPre
+    if (body.emotionDuring) tradeData.emotionDuring = body.emotionDuring
+    if (body.emotionPost) tradeData.emotionPost = body.emotionPost
+    if (body.sleepHours != null) tradeData.sleepHours = parseFloat(body.sleepHours)
+    if (body.fatigueLevel != null) tradeData.fatigueLevel = parseInt(body.fatigueLevel, 10)
+    if (body.distractions) tradeData.distractions = body.distractions
 
-   // Compute regime from entry date
-   tradeData.regime = await classifyMarketRegime(tradeData.entryDate)
+    // Compute regime from entry date
+    tradeData.regime = await classifyMarketRegime(tradeData.entryDate)
   
    // Compute P&L if exit price provided
    if (tradeData.exitPrice) {

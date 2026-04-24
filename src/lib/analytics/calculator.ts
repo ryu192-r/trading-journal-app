@@ -1,4 +1,5 @@
-import { getDailyOHLC, getPriceRange, getLatestVIX } from '../market/dataFetcher';
+import { prisma } from '@/lib/db'
+import { getDailyOHLC, getPriceRange, getLatestVIX, toYahooTicker } from '@/lib/market/dataFetcher';
 
 /* ==================== TYPE DEFINITIONS ==================== */
 
@@ -64,6 +65,64 @@ export function computeRMultiple(
   const risk = Math.abs(entryPrice - stopPrice);
   if (risk === 0) return 0;
   return direction === 'LONG' ? pnl / risk : pnl / risk;
+}
+
+export interface GhostResult {
+  tradeId: string
+  symbol: string
+  direction: 'LONG' | 'SHORT'
+  exitPrice: number
+  exitDate: Date
+  maxPrice30d: number
+  minPrice30d: number
+  missedProfit: number
+  missedR: number | null
+}
+
+export async function computeGhostTrade(tradeId: string, userId: string): Promise<GhostResult | null> {
+  const trade = await prisma.trade.findFirst({
+    where: { id: tradeId, userId },
+    select: { id: true, symbol: true, direction: true, entryPrice: true, exitPrice: true, stopPrice: true, quantity: true, exitDate: true }
+  })
+  if (!trade || !trade.exitPrice || !trade.exitDate) return null
+
+  const ticker = toYahooTicker(trade.symbol)
+  const start = new Date(trade.exitDate)
+  start.setDate(start.getDate() + 1)
+  const end = new Date(trade.exitDate)
+  end.setDate(end.getDate() + 30)
+  
+  const candles = await getDailyOHLC(ticker, start, end)
+  if (candles.length === 0) return null
+
+  const window30 = candles.slice(0, 30)
+  const maxPrice30d = Math.max(...window30.map(c => c.high))
+  const minPrice30d = Math.min(...window30.map(c => c.low))
+  const qty = trade.quantity || 1
+  let missedProfit = 0
+  if (trade.direction === 'LONG') {
+    missedProfit = (maxPrice30d - trade.exitPrice) * qty
+  } else {
+    missedProfit = (trade.exitPrice - minPrice30d) * qty
+  }
+
+  let missedR: number | null = null
+  if (trade.stopPrice) {
+    const riskPerShare = Math.abs(trade.entryPrice - trade.stopPrice)
+    if (riskPerShare > 0) missedR = missedProfit / (riskPerShare * qty)
+  }
+
+  return {
+    tradeId: trade.id,
+    symbol: trade.symbol,
+    direction: trade.direction,
+    exitPrice: trade.exitPrice,
+    exitDate: trade.exitDate,
+    maxPrice30d,
+    minPrice30d,
+    missedProfit,
+    missedR
+  }
 }
 
 /* ==================== PERFORMANCE RATIOS ==================== */
@@ -257,20 +316,6 @@ export function computeSetupScorecard(
   }
 
   return results;
-}
-
-/* ==================== GHOST TRADE (placeholder) ==================== */
-
-/**
- * Placeholder for Phase 3: tracks what happened after exit for 30 days.
- * postExitData would contain future price data.
- */
-export function computeGhostTrade(
-  trade: Trade,
-  postExitData?: Candle[]
-): Record<string, unknown> {
-  // Not implemented in Phase 2
-  return { tracked: false, note: 'Ghost tracking deferred to Phase 3' };
 }
 
 /* ==================== WEEKLY OVERLAY ==================== */

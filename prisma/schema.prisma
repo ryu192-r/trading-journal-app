@@ -53,12 +53,20 @@ model Trade {
   
   // Computed (stored for performance, updated via trigger or app logic)
   pnl          Float?    // Calculated P&L in INR
-
+  
   // Analytics (Phase 2)
   mae          Float?    // Maximum Adverse Excursion (Rs)
   mfe          Float?    // Maximum Favorable Excursion (Rs)
   regime       String?   // Market regime (Bull/Bear/Sideways × Normal/Volatile)
-
+  
+  // Behavioral Analytics (Phase 3)
+  emotionPre    EmotionType?
+  emotionDuring EmotionType?
+  emotionPost   EmotionType?
+  sleepHours    Float?
+  fatigueLevel  Int?
+  distractions  String?
+  
   @@index([userId])
   @@index([symbol])
   @@index([entryDate])
@@ -77,4 +85,13 @@ enum SetupType {
   PULLBACK
   PARABOLIC_LONG
   CUSTOM
+}
+
+enum EmotionType {
+  CALM
+  FOMO
+  REVENGE
+  CONFIDENT
+  UNCERTAIN
+  BORED
 }
