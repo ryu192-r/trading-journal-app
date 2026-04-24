@@ -3,7 +3,7 @@ import { requireAuth } from '@/middleware/auth';
 import { prisma } from '@/lib/db';
 import { mapBrokerCSV } from '@/lib/parsers/brokerMappers';
 import { TradeCreateSchema } from '@/lib/validations/zodSchemas';
-import { classifyMarketRegime } from '@/lib/analytics/calculator';
+import { classifyMarketRegime, computeMAE } from '@/lib/analytics/calculator';
 
 export async function POST(request: NextRequest) {
   const user = await requireAuth();
@@ -53,15 +53,27 @@ export async function POST(request: NextRequest) {
            regime: await classifyMarketRegime(validated.entryDate),
          };
 
-        if (validated.exitPrice) {
-          const qty = validated.quantity || 1;
-          const diff = validated.direction === 'LONG'
-            ? validated.exitPrice - validated.entryPrice
-            : validated.entryPrice - validated.exitPrice;
-          dbRecord.pnl = diff * qty;
-        }
+         if (validated.exitPrice) {
+           const qty = validated.quantity || 1;
+           const diff = validated.direction === 'LONG'
+             ? validated.exitPrice - validated.entryPrice
+             : validated.entryPrice - validated.exitPrice;
+           dbRecord.pnl = diff * qty;
+         }
 
-        await tx.trade.create({ data: dbRecord });
+         // Compute and store MAE for closed trades; fail row if MAE computation fails
+         if (validated.exitPrice) {
+           const maeResult = await computeMAE(dbRecord);
+           if (maeResult) {
+             dbRecord.mae = maeResult.maeAbs;
+           } else {
+             throw new Error('MAE computation failed');
+           }
+         } else {
+           dbRecord.mae = null;
+         }
+
+         await tx.trade.create({ data: dbRecord });
         createdCount++;
       } catch (err: any) {
         failedCount++;
