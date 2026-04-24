@@ -68,18 +68,20 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   await requireAuth()
   
+  const { id } = await params
+  
   const existing = await prisma.trade.findUnique({
-    where: { id: params.id }
+    where: { id }
   })
   if (!existing) {
     return NextResponse.json({ error: 'Trade not found' }, { status: 404 })
   }
   
-  await prisma.trade.delete({ where: { id: params.id } })
+  await prisma.trade.delete({ where: { id } })
   
   return NextResponse.json({ success: true })
 }
