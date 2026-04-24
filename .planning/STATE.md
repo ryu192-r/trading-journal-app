@@ -35,12 +35,12 @@ progress:
 
 **Phase:** 2 — Core Analytics
 **Plan:** 3 of 3
-**Status:** Phase complete — ready for verification
+**Status:** Phase complete — gap-04 closed, verification pending
 **Progress:** [██████████] 100%
 
 **Progress Bar:** [█████████] 2/5 phases
 
-**Next:** Phase 3 — Behavioral Analysis (planning pending)
+**Next:** Run `/gsd-verify-phase 2` → Phase 3 — Behavioral Analysis (planning pending)
 
 ## Performance Metrics
 
@@ -92,16 +92,17 @@ progress:
 
 ## Session Continuity
 
-**Last Updated:** 2026-04-24T15:51:37+05:30
-**Context:** Phase 2 implementation complete (3/3 plans executed). Gap-03 closure completed.
+**Last Updated:** 2026-04-24T16:06:48+05:30
+**Context:** Phase 2 implementation complete (3/3 plans executed). Gap-03 and gap-04 closures completed.
 
 **Phase 2 Summary:** `.planning/phases/02-core-analytics/` (02-01, 02-02, 02-03 SUMMARY.md files; gap-01 through gap-05 closures)
 
 **Gap Closure Status:**
+
 - [x] gap-01: computeMAE function and trade.mae field created
 - [x] gap-02: MAE auto-compute on all trade creation endpoints ✓ (this work)
 - [x] gap-03: Exit efficiency scoring added to R-multiples page
-- [ ] gap-04: TBD
+- [x] gap-04: PerformanceMetricsCard + /analytics/performance page created
 - [ ] gap-05: TBD
 
 **Next Steps:**
