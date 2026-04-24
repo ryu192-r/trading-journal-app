@@ -11,7 +11,7 @@
 
 ## Phases
 
-- [ ] **Phase 1: Foundation & Trade Logging** — Core data infrastructure, manual entry, CSV import, basic UI, export
+- [x] **Phase 1: Foundation & Trade Logging** — Core data infrastructure, manual entry, CSV import, basic UI, export
 - [ ] **Phase 2: Core Analytics** — MAE/MFE, setup scorecards, equity curve, R-multiple, market regime
 - [ ] **Phase 3: Behavioral Analysis** — Emotion tagging, revenge/overtrading detection, ghost tracking, behavioral alerts
 - [ ] **Phase 4: Dashboard & Alerts** — Daily pre-market dashboard, blowup calculator, real-time guardrails
