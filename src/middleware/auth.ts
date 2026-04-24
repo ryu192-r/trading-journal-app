@@ -2,6 +2,11 @@ import { prisma } from '@/lib/db'
 import { cookies } from 'next/headers'
 import jwt from 'jsonwebtoken'
 
+// Fail fast if JWT_SECRET is not configured
+if (!process.env.JWT_SECRET) {
+  throw new Error('JWT_SECRET environment variable is required')
+}
+
 export interface JwtPayload {
   userId: string
   email: string
