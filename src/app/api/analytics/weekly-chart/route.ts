@@ -4,8 +4,8 @@ import { prisma } from '@/lib/db';
 import { getDailyOHLC } from '@/lib/market/dataFetcher';
 
 export async function GET(request: NextRequest) {
-  await requireAuth();
-  const userId = (await requireAuth()).userId;
+  const authResult = await requireAuth();
+  const userId = authResult.userId;
 
   // Parse week query param (YYYY-WW), default to current week Monday
   const { searchParams } = new URL(request.url);
@@ -28,6 +28,21 @@ export async function GET(request: NextRequest) {
   // Fetch NIFTY daily candles
   const candles = await getDailyOHLC('NIFTY', weekStart, weekEnd);
 
+  // Fetch prior week's candles to compute week-over-week trend
+  const priorWeekStart = new Date(weekStart);
+  priorWeekStart.setDate(priorWeekStart.getDate() - 7);
+  const priorWeekEnd = new Date(weekStart);
+  priorWeekEnd.setDate(priorWeekEnd.getDate() - 1);
+  const priorWeekCandles = await getDailyOHLC('NIFTY', priorWeekStart, priorWeekEnd);
+
+  // Compute market trend (week-over-week close change)
+  const weekClose = candles.length > 0 ? candles[candles.length - 1].close : null;
+  const priorWeekClose = priorWeekCandles.length > 0 ? priorWeekCandles[priorWeekCandles.length - 1].close : null;
+  let trendUp: boolean | null = null;
+  if (weekClose !== null && priorWeekClose !== null) {
+    trendUp = weekClose > priorWeekClose;
+  }
+
   // Fetch user's trades with entryDate in the week
   const trades = await prisma.trade.findMany({
     where: {
@@ -42,23 +57,46 @@ export async function GET(request: NextRequest) {
     type: 'entry' | 'exit';
     direction: string;
     price: number;
+    trend: 'with' | 'counter';
   }
 
-  const tradeMarkers: TradeMarker[] = trades.map((t) => ({
-    date: t.entryDate,
-    type: 'entry',
-    direction: t.direction,
-    price: t.entryPrice,
-  }));
+  const tradeMarkers: TradeMarker[] = trades.map((t) => {
+    // Determine trend alignment: with-trend if trade direction matches market trend
+    let trend: 'with' | 'counter' = 'counter'; // Default to counter-trend if trend can't be determined
+    if (trendUp !== null) {
+      const isLong = t.direction.toUpperCase() === 'LONG';
+      const isMarketUp = trendUp;
+      // With-trend: long trade when market up, short trade when market down
+      if ((isLong && isMarketUp) || (!isLong && !isMarketUp)) {
+        trend = 'with';
+      }
+    }
+    return {
+      date: t.entryDate,
+      type: 'entry',
+      direction: t.direction,
+      price: t.entryPrice,
+      trend,
+    };
+  });
 
   // Also include exit markers if exitDate is within the week
   for (const t of trades) {
     if (t.exitDate && t.exitDate >= weekStart && t.exitDate <= weekEnd) {
+      let trend: 'with' | 'counter' = 'counter';
+      if (trendUp !== null) {
+        const isLong = t.direction.toUpperCase() === 'LONG';
+        const isMarketUp = trendUp;
+        if ((isLong && isMarketUp) || (!isLong && !isMarketUp)) {
+          trend = 'with';
+        }
+      }
       tradeMarkers.push({
         date: t.exitDate,
         type: 'exit',
         direction: t.direction,
         price: t.exitPrice!,
+        trend,
       });
     }
   }
