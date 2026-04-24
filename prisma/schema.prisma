@@ -53,7 +53,12 @@ model Trade {
   
   // Computed (stored for performance, updated via trigger or app logic)
   pnl          Float?    // Calculated P&L in INR
-  
+
+  // Analytics (Phase 2)
+  mae          Float?    // Maximum Adverse Excursion (Rs)
+  mfe          Float?    // Maximum Favorable Excursion (Rs)
+  regime       String?   // Market regime (Bull/Bear/Sideways × Normal/Volatile)
+
   @@index([userId])
   @@index([symbol])
   @@index([entryDate])
