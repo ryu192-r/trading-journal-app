@@ -90,7 +90,10 @@
 7. User can view behavioral analytics dashboard highlighting tiltmeter scoring and rule adherence tracking
 8. System enforces and monitors cooldown periods after losses automatically
 
-**Plans:** TBD
+**Plans:** 3/3 planned
+- [ ] 03-01-PLAN.md — Emotion & physical state schema, types, and API updates
+- [ ] 03-02-PLAN.md — Behavioral detection engine (revenge, overtrading, emotion correlation) and API endpoints
+- [ ] 03-03-PLAN.md — Ghost trade tracker and behavioral analytics dashboard UI
 
 ### Phase 4: Dashboard & Alerts
 
@@ -164,7 +167,7 @@
 |-------|----------------|--------|-----------|
 | 1. Foundation & Trade Logging | 5/5 | Executed (verification pending) | 2026-04-24 |
 | 2. Core Analytics | 3/3 | ✅ Verified | 2026-04-24 |
-| 3. Behavioral Analysis | 0/3 | Not started | - |
+| 3. Behavioral Analysis | 3/3 | 🚧 Planned | - |
 | 4. Dashboard & Alerts | 0/3 | Not started | - |
 | 5. Reports & Polish | 0/3 | Not started | - |
 
