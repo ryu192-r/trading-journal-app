@@ -1,4 +1,5 @@
-import '../index.css'
+import '../index.css';
+import { BottomNav } from '@/components/BottomNav';
 
 export default function RootLayout({
   children,
@@ -7,8 +8,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-background antialiased">
+      <body className="min-h-screen bg-background antialiased pb-16">
         {children}
+        <BottomNav />
       </body>
     </html>
   )
