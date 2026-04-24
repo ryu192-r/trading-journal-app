@@ -24,3 +24,10 @@ export interface TradeOutput extends TradeInput {
   updatedAt: Date;
   pnl?: number | null;
 }
+
+export interface ParsedRow {
+  success: boolean;
+  trade?: TradeInput;
+  errors?: string[];
+  rowNumber?: number;
+}
