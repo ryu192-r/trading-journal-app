@@ -19,6 +19,11 @@ interface Stats {
 interface RMultiplesResponse {
   histogram: HistogramBin[];
   stats: Stats;
+  exitEfficiency?: {
+    averageMFE: number;
+    targetHitRate: number;
+    sampleSize: number;
+  };
 }
 
 export default function RMultiplesPage() {
@@ -117,7 +122,7 @@ export default function RMultiplesPage() {
       )}
 
       {/* Histogram */}
-      {data && <RMultipleHistogram bins={data.histogram} />}
+      {data && <RMultipleHistogram bins={data.histogram} exitEfficiency={data.exitEfficiency} />}
     </div>
   );
 }
