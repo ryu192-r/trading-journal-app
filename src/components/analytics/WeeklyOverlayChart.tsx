@@ -41,6 +41,7 @@ interface TradeMarker {
   type: 'entry' | 'exit';
   direction: 'long' | 'short';
   price: number;
+  trend: 'with' | 'counter';
 }
 
 interface WeeklyChartResponse {
@@ -122,47 +123,45 @@ export default function WeeklyOverlayChart({ weekLabel }: WeeklyOverlayChartProp
     yAxisID: 'y',
   });
 
-  // Scatter entries
-  const entries = data.tradeMarkers
-    .filter((m) => m.type === 'entry')
-    .map((m) => ({
-      x: new Date(m.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }),
-      y: m.price,
-    }));
-  if (entries.length > 0) {
+  // Scatter entries with trend-based coloring
+  const entryMarkers = data.tradeMarkers.filter((m) => m.type === 'entry');
+  const entryData = entryMarkers.map((m) => ({
+    x: new Date(m.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }),
+    y: m.price,
+  }));
+  if (entryMarkers.length > 0) {
     datasets.push({
       type: 'scatter',
-      label: 'Entry Long',
-      data: entries.filter((_, i) => data.tradeMarkers.filter(m => m.type === 'entry')[i].direction === 'long'),
-      backgroundColor: 'rgba(34, 197, 94, 0.9)',
-      pointStyle: 'triangle-up',
-      pointRadius: 8,
-      yAxisID: 'y',
-    });
-    datasets.push({
-      type: 'scatter',
-      label: 'Entry Short',
-      data: entries.filter((_, i) => data.tradeMarkers.filter(m => m.type === 'entry')[i].direction === 'short'),
-      backgroundColor: 'rgba(239, 68, 68, 0.9)',
-      pointStyle: 'triangle-down',
+      label: 'Entry Markers',
+      data: entryData,
+      pointBackgroundColor: (context) => {
+        const marker = entryMarkers[context.dataIndex];
+        return marker.trend === 'with' ? '#22c55e' : '#ef4444';
+      },
+      pointStyle: (context) => {
+        const marker = entryMarkers[context.dataIndex];
+        return marker.direction === 'long' ? 'triangle-up' : 'triangle-down';
+      },
       pointRadius: 8,
       yAxisID: 'y',
     });
   }
 
-  // Scatter exits
-  const exits = data.tradeMarkers
-    .filter((m) => m.type === 'exit')
-    .map((m) => ({
-      x: new Date(m.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }),
-      y: m.price,
-    }));
-  if (exits.length > 0) {
+  // Scatter exits with trend-based coloring
+  const exitMarkers = data.tradeMarkers.filter((m) => m.type === 'exit');
+  const exitData = exitMarkers.map((m) => ({
+    x: new Date(m.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }),
+    y: m.price,
+  }));
+  if (exitMarkers.length > 0) {
     datasets.push({
       type: 'scatter',
-      label: 'Exit',
-      data: exits,
-      backgroundColor: 'rgba(255, 159, 64, 0.9)',
+      label: 'Exit Markers',
+      data: exitData,
+      pointBackgroundColor: (context) => {
+        const marker = exitMarkers[context.dataIndex];
+        return marker.trend === 'with' ? '#4ade80' : '#f87171'; // lighter green/red for exits
+      },
       pointStyle: 'rectRot',
       pointRadius: 6,
       yAxisID: 'y',
@@ -214,15 +213,19 @@ export default function WeeklyOverlayChart({ weekLabel }: WeeklyOverlayChartProp
         <div className="mt-4 flex flex-wrap gap-4 text-sm">
           <div className="flex items-center gap-2">
             <span className="w-3 h-3 bg-green-500 rounded-full"></span>
-            <span>Long Entry</span>
+            <span>With-Trend Entry</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="w-3 h-3 bg-red-500 rounded-full"></span>
-            <span>Short Entry</span>
+            <span>Counter-Trend Entry</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="w-3 h-3 bg-orange-500 rounded-full"></span>
-            <span>Exit</span>
+            <span className="w-3 h-3 bg-green-300 rounded-full"></span>
+            <span>With-Trend Exit</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="w-3 h-3 bg-red-300 rounded-full"></span>
+            <span>Counter-Trend Exit</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="w-3 h-3 bg-teal-500 rounded-full"></span>
