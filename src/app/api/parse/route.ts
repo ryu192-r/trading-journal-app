@@ -3,6 +3,7 @@ import { requireAuth } from '@/middleware/auth';
 import { prisma } from '@/lib/db';
 import { parseNaturalLanguage } from '@/lib/parsers/nlParser';
 import { TradeCreateSchema } from '@/lib/validations/zodSchemas';
+import { classifyMarketRegime } from '@/lib/analytics/calculator';
 
 export async function POST(request: NextRequest) {
   const user = await requireAuth();
@@ -27,21 +28,22 @@ export async function POST(request: NextRequest) {
       entryDate: new Date(),
     });
 
-    const dbRecord: any = {
-      symbol: validated.symbol,
-      direction: validated.direction,
-      entryPrice: validated.entryPrice,
-      userId: user.userId,
-      entryDate: validated.entryDate,
-      exitPrice: validated.exitPrice,
-      stopPrice: validated.stopPrice,
-      targetPrice: validated.targetPrice,
-      quantity: validated.quantity,
-      setupType: validated.setupType,
-      tags: validated.tags,
-      notes: validated.notes,
-      screenshotUrl: validated.screenshotUrl,
-    };
+     const dbRecord: any = {
+       symbol: validated.symbol,
+       direction: validated.direction,
+       entryPrice: validated.entryPrice,
+       userId: user.userId,
+       entryDate: validated.entryDate,
+       exitPrice: validated.exitPrice,
+       stopPrice: validated.stopPrice,
+       targetPrice: validated.targetPrice,
+       quantity: validated.quantity,
+       setupType: validated.setupType,
+       tags: validated.tags,
+       notes: validated.notes,
+       screenshotUrl: validated.screenshotUrl,
+       regime: await classifyMarketRegime(validated.entryDate),
+     };
 
     if (validated.exitPrice) {
       const qty = validated.quantity || 1;

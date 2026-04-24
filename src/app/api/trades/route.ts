@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
-import { requireAuth, getUserIdFromToken } from '@/middleware/auth'
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/db';
+import { requireAuth, getUserIdFromToken } from '@/middleware/auth';
+import { classifyMarketRegime } from '@/lib/analytics/calculator';
 
 export async function GET(request: NextRequest) {
   await requireAuth()
@@ -67,15 +68,18 @@ export async function POST(request: NextRequest) {
     userId,
   }
   
-  // Optional fields
-  if (body.exitPrice != null) tradeData.exitPrice = parseFloat(body.exitPrice)
-  if (body.stopPrice != null) tradeData.stopPrice = parseFloat(body.stopPrice)
-  if (body.targetPrice != null) tradeData.targetPrice = parseFloat(body.targetPrice)
-  if (body.exitDate) tradeData.exitDate = new Date(body.exitDate)
-  if (body.quantity != null) tradeData.quantity = Math.floor(body.quantity)
-  if (body.setupType) tradeData.setupType = body.setupType
-  if (body.notes) tradeData.notes = body.notes
-  if (body.screenshotUrl) tradeData.screenshotUrl = body.screenshotUrl
+   // Optional fields
+   if (body.exitPrice != null) tradeData.exitPrice = parseFloat(body.exitPrice)
+   if (body.stopPrice != null) tradeData.stopPrice = parseFloat(body.stopPrice)
+   if (body.targetPrice != null) tradeData.targetPrice = parseFloat(body.targetPrice)
+   if (body.exitDate) tradeData.exitDate = new Date(body.exitDate)
+   if (body.quantity != null) tradeData.quantity = Math.floor(body.quantity)
+   if (body.setupType) tradeData.setupType = body.setupType
+   if (body.notes) tradeData.notes = body.notes
+   if (body.screenshotUrl) tradeData.screenshotUrl = body.screenshotUrl
+
+   // Compute regime from entry date
+   tradeData.regime = await classifyMarketRegime(tradeData.entryDate)
   
   // Compute P&L if exit price provided
   if (tradeData.exitPrice) {
