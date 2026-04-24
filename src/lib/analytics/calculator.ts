@@ -129,22 +129,28 @@ export function computeRecoveryFactor(totalProfit: number, maxDrawdown: number):
 export async function computeMAE(
   trade: Trade,
   priceData?: Candle[]
-): Promise<MAEResult> {
-  const data = priceData ?? await getDailyOHLC(
-    trade.symbol,
-    trade.entryDate,
-    trade.exitDate ?? new Date()
-  );
-  const risk = Math.abs(trade.entryPrice - (trade.stopPrice ?? trade.entryPrice * 0.98));
-  let maeAbs = 0;
-  for (const c of data) {
-    const adverse = trade.direction === 'LONG'
-      ? trade.entryPrice - c.low
-      : c.high - trade.entryPrice;
-    if (adverse > maeAbs) maeAbs = adverse;
+): Promise<MAEResult | null> {
+  try {
+    const data = priceData ?? await getDailyOHLC(
+      trade.symbol,
+      trade.entryDate,
+      trade.exitDate ?? new Date()
+    );
+    const risk = Math.abs(trade.entryPrice - (trade.stopPrice ?? trade.entryPrice * 0.98));
+    let maeAbs = 0;
+    for (const c of data) {
+      const adverse = trade.direction === 'LONG'
+        ? trade.entryPrice - c.low
+        : c.high - trade.entryPrice;
+      if (adverse > maeAbs) maeAbs = adverse;
+    }
+    const maeR = risk > 0 ? maeAbs / risk : 0;
+    return { maeAbs, maeR };
+  } catch (error) {
+    // Silently return null to avoid leaking stack traces; trade creation can proceed without MAE
+    console.error('computeMAE failed:', error);
+    return null;
   }
-  const maeR = risk > 0 ? maeAbs / risk : 0;
-  return { maeAbs, maeR };
 }
 
 /**

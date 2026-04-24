@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { requireAuth, getUserIdFromToken } from '@/middleware/auth';
-import { classifyMarketRegime } from '@/lib/analytics/calculator';
+import { classifyMarketRegime, computeMAE } from '@/lib/analytics/calculator';
 
 export async function GET(request: NextRequest) {
   await requireAuth()
@@ -81,16 +81,22 @@ export async function POST(request: NextRequest) {
    // Compute regime from entry date
    tradeData.regime = await classifyMarketRegime(tradeData.entryDate)
   
-  // Compute P&L if exit price provided
-  if (tradeData.exitPrice) {
-    const qty = tradeData.quantity || 1
-    const priceDiff = direction === 'LONG' 
-      ? tradeData.exitPrice - tradeData.entryPrice
-      : tradeData.entryPrice - tradeData.exitPrice
-    tradeData.pnl = priceDiff * qty
-  }
-  
-  const trade = await prisma.trade.create({ data: tradeData })
+   // Compute P&L if exit price provided
+   if (tradeData.exitPrice) {
+     const qty = tradeData.quantity || 1
+     const priceDiff = direction === 'LONG'
+       ? tradeData.exitPrice - tradeData.entryPrice
+       : tradeData.entryPrice - tradeData.exitPrice
+     tradeData.pnl = priceDiff * qty
+   }
+
+   // Compute MAE for closed trades
+   if (tradeData.exitPrice) {
+     const maeResult = await computeMAE(tradeData)
+     tradeData.mae = maeResult?.maeAbs ?? null
+   }
+
+   const trade = await prisma.trade.create({ data: tradeData })
   
   return NextResponse.json({ trade }, { status: 201 })
 }
