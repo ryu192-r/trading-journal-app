@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { TradeList } from '@/components/TradeList';
+import { TradeForm } from '@/components/TradeForm';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -12,6 +13,7 @@ export default function TradesPage() {
   const [loading, setLoading] = useState(true);
   const [nlInput, setNlInput] = useState('');
   const [nlLoading, setNlLoading] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [filters, setFilters] = useState({
     symbol: '',
     direction: 'all',
@@ -35,7 +37,6 @@ export default function TradesPage() {
       const res = await fetch(`/api/trades?${params}`);
       if (res.ok) {
         const data = await res.json();
-        // Map to TradeList shape: ensure exitPrice/pnl are null not undefined
         const normalized = (data.trades || []).map((t: any) => ({
           ...t,
           exitPrice: t.exitPrice ?? null,
@@ -79,9 +80,25 @@ export default function TradesPage() {
     }
   };
 
+  const handleTradeCreated = () => {
+    setDialogOpen(false);
+    fetchTrades();
+  };
+
+  // Build filters prop for TradeList export
+  const exportFilters = {
+    symbol: filters.symbol,
+    direction: filters.direction,
+    startDate: filters.startDate,
+    endDate: filters.endDate,
+  };
+
   return (
     <div className="container mx-auto p-4 md:p-8 space-y-6">
-      <h1 className="text-3xl font-bold">Trades</h1>
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold">Trades</h1>
+        <Button onClick={() => setDialogOpen(true)}>Add Trade</Button>
+      </div>
 
       {/* Filters */}
       <Card>
@@ -149,18 +166,21 @@ export default function TradesPage() {
               className="flex-1"
             />
             <Button type="submit" disabled={nlLoading}>
-              {nlLoading ? 'Adding...' : 'Add Trade'}
+              {nlLoading ? 'Adding...' : 'Quick Add'}
             </Button>
           </form>
         </CardContent>
       </Card>
 
-      {/* Trade List */}
+      {/* Trade List with export */}
       {loading ? (
         <p>Loading trades...</p>
       ) : (
-        <TradeList trades={trades} />
+        <TradeList trades={trades} filters={exportFilters} />
       )}
+
+      {/* Modal Trade Form */}
+      <TradeForm open={dialogOpen} onOpenChange={setDialogOpen} onSubmit={handleTradeCreated} />
     </div>
   );
 }
