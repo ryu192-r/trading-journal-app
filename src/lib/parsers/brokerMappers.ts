@@ -38,14 +38,18 @@ function mapZerodha(row: Record<string, string>): TradeInput | null {
   const quantity = row['Quantity'] ? parseInt(row['Quantity'], 10) : undefined;
   const entryDate = row['Trade Date'] ? new Date(row['Trade Date']) : undefined;
 
+  // Build tags from broker-specific fields
+  const tags: string[] = [];
+  if (row['Product']) tags.push(row['Product']);
+  if (row['Exchange']) tags.push(row['Exchange']);
+
   return {
     symbol,
     direction: isSell ? 'SHORT' : 'LONG',
     entryPrice,
     quantity,
     entryDate,
-    setupType: (row['Product'] as any) || undefined,
-    tags: row['Product'] ? [row['Product']] : undefined,
+    tags: tags.length > 0 ? tags : undefined,
     notes: 'Imported from Zerodha',
   };
 }

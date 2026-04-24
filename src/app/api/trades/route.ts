@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
-import { requireAuth } from '@/middleware/auth'
+import { requireAuth, getUserIdFromToken } from '@/middleware/auth'
 
 export async function GET(request: NextRequest) {
   await requireAuth()
@@ -48,6 +48,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Missing required fields: symbol, direction, entryPrice' }, { status: 400 })
   }
   
+  // Get user ID from token
+  const userId = await getUserIdFromToken()
+  if (!userId) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  
   // Normalize direction
   const direction = body.direction.toUpperCase() === 'SHORT' ? 'SHORT' : 'LONG'
   
@@ -58,6 +64,7 @@ export async function POST(request: NextRequest) {
     entryPrice: parseFloat(body.entryPrice),
     entryDate: body.entryDate ? new Date(body.entryDate) : new Date(),
     tags: body.tags || [],
+    userId,
   }
   
   // Optional fields

@@ -4,12 +4,13 @@ import { requireAuth } from '@/middleware/auth'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   await requireAuth()
+  const { id } = await params
   
   const trade = await prisma.trade.findUnique({
-    where: { id: params.id }
+    where: { id }
   })
   
   if (!trade) {
@@ -21,13 +22,14 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   await requireAuth()
+  const { id } = await params
   const body = await request.json()
   
   const existing = await prisma.trade.findUnique({
-    where: { id: params.id }
+    where: { id }
   })
   if (!existing) {
     return NextResponse.json({ error: 'Trade not found' }, { status: 404 })
@@ -57,7 +59,7 @@ export async function PATCH(
   }
   
   const trade = await prisma.trade.update({
-    where: { id: params.id },
+    where: { id },
     data: updateData,
   })
   
