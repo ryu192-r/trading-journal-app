@@ -22,9 +22,14 @@ interface Bin {
 
 interface RMultipleHistogramProps {
   bins: Bin[];
+  exitEfficiency?: {
+    averageMFE: number;
+    targetHitRate: number;
+    sampleSize: number;
+  };
 }
 
-export default function RMultipleHistogram({ bins }: RMultipleHistogramProps) {
+export default function RMultipleHistogram({ bins, exitEfficiency }: RMultipleHistogramProps) {
   const data = {
     labels: bins.map((b) => b.label),
     datasets: [
@@ -57,21 +62,44 @@ export default function RMultipleHistogram({ bins }: RMultipleHistogramProps) {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>R-Multiple Histogram</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div style={{ height: '400px' }}>
-          {bins.length > 0 ? (
-            <Bar data={data} options={options} />
-          ) : (
-            <p className="text-muted-foreground text-center py-8">
-              No closed trades to display histogram.
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>R-Multiple Histogram</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div style={{ height: '400px' }}>
+            {bins.length > 0 ? (
+              <Bar data={data} options={options} />
+            ) : (
+              <p className="text-muted-foreground text-center py-8">
+                No closed trades to display histogram.
+              </p>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {exitEfficiency && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Exit Efficiency</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Average MFE</p>
+              <p className="text-2xl font-bold">{exitEfficiency.averageMFE.toFixed(2)}R</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Target Hit Rate</p>
+              <p className="text-2xl font-bold">{(exitEfficiency.targetHitRate * 100).toFixed(1)}%</p>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Sample size: {exitEfficiency.sampleSize} winner trade{exitEfficiency.sampleSize !== 1 ? 's' : ''} with target price set
             </p>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+          </CardContent>
+        </Card>
+      )}
+    </div>
   );
 }
