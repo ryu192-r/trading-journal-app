@@ -12,7 +12,7 @@
 ## Phases
 
 - [x] **Phase 1: Foundation & Trade Logging** — Core data infrastructure, manual entry, CSV import, basic UI, export
-- [ ] **Phase 2: Core Analytics** — MAE/MFE, setup scorecards, equity curve, R-multiple, market regime
+- [x] **Phase 2: Core Analytics** — MAE/MFE, setup scorecards, equity curve, R-multiple, market regime
 - [ ] **Phase 3: Behavioral Analysis** — Emotion tagging, revenge/overtrading detection, ghost tracking, behavioral alerts
 - [ ] **Phase 4: Dashboard & Alerts** — Daily pre-market dashboard, blowup calculator, real-time guardrails
 - [ ] **Phase 5: Reports & Polish** — Weekly/annual reports viewing, UI polish, production optimization
@@ -64,7 +64,10 @@
 10. System shows adaptive rules per regime (e.g., "When VIX > 25 → sit out")
 11. Weekly auto-plot of trades on Nifty/Sensex chart displays with-trend vs counter-trend performance for situational awareness
 
-**Plans:** TBD
+**Plans:** 3/3 complete
+- [x] 02-01-PLAN.md — Analytics engine & database schema
+- [x] 02-02-PLAN.md — Analytics API endpoints
+- [x] 02-03-PLAN.md — Analytics UI components and pages
 
 ### Phase 3: Behavioral Analysis
 
@@ -156,8 +159,8 @@
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Trade Logging | 5/5 | Executed (verification pending) | - |
-| 2. Core Analytics | 0/3 | Not started | - |
+| 1. Foundation & Trade Logging | 5/5 | Executed (verification pending) | 2026-04-24 |
+| 2. Core Analytics | 3/3 | Executed (verification pending) | - |
 | 3. Behavioral Analysis | 0/3 | Not started | - |
 | 4. Dashboard & Alerts | 0/3 | Not started | - |
 | 5. Reports & Polish | 0/3 | Not started | - |
